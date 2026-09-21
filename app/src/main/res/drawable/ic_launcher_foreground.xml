@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Camera Target / Diagnostic Focus Reticle -->
+    <path
+        android:pathData="M38,30 L30,30 L30,38"
+        android:strokeColor="#34D399"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M70,30 L78,30 L78,38"
+        android:strokeColor="#34D399"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M30,70 L30,78 L38,78"
+        android:strokeColor="#34D399"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M78,70 L78,78 L70,78"
+        android:strokeColor="#34D399"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <!-- Main Botanical Leaf Shape -->
+    <path
+        android:pathData="M54,30 C66,34 76,46 76,60 C76,72 66,78 54,78 C42,78 32,72 32,60 C32,46 42,34 54,30 Z"
+        android:fillColor="#10B981" />
+
+    <!-- Leaf Left Highlight -->
+    <path
+        android:pathData="M54,30 C45,35 36,46 36,60 C36,70 44,76 54,78 Z"
+        android:fillColor="#059669" />
+
+    <!-- Center Vein / Telemetry Line -->
+    <path
+        android:pathData="M54,36 L54,72"
+        android:strokeColor="#A7F3D0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <!-- Leaf Veins -->
+    <path
+        android:pathData="M54,48 L64,43 M54,56 L66,51 M54,48 L44,43 M54,56 L42,51"
+        android:strokeColor="#A7F3D0"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <!-- AI Vitality Glow Point -->
+    <path
+        android:pathData="M54,32 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0"
+        android:fillColor="#38BDF8" />
+</vector>

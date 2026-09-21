@@ -1,0 +1,6 @@
+{
+  "name": "PlantSense",
+  "description": "PlantSense - AI Plant Health & Vitality Assistant with real-time CameraX scanning, AI root-cause diagnosis, Room database persistence, D3/Recharts-inspired health trends, and smart watering reminders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
