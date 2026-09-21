@@ -274,112 +274,8 @@ fun MainCameraPreviewCard(
                 }
             }
 
-            // Viewfinder Content Area: Permission prompt, Live Preview, or Captured Frame Review
-            if (!hasCameraPermission) {
-                // Permission Request Card with instant sample fallback
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(230.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Indigo900.copy(alpha = 0.9f),
-                                    Indigo700.copy(alpha = 0.85f)
-                                )
-                            )
-                        )
-                        .border(
-                            1.dp,
-                            Brush.horizontalGradient(listOf(Emerald400.copy(alpha = 0.4f), Cyan400.copy(alpha = 0.4f))),
-                            RoundedCornerShape(18.dp)
-                        )
-                        .padding(20.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = Color.White.copy(alpha = 0.15f),
-                            modifier = Modifier.size(52.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.CameraAlt,
-                                    contentDescription = null,
-                                    tint = Emerald400,
-                                    modifier = Modifier.size(28.dp)
-                                )
-                            }
-                        }
-
-                        Text(
-                            text = "Enable Camera Viewfinder",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-
-                        Text(
-                            text = "Stream your house plants in real time to inspect foliage, monitor soil conditions, and capture frames for AI diagnosis.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.8f),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.padding(top = 4.dp)
-                        ) {
-                            Button(
-                                onClick = {
-                                    permissionLauncher.launch(Manifest.permission.CAMERA)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Emerald500,
-                                    contentColor = Color.White
-                                ),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.testTag("enable_camera_preview_button")
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.CameraAlt,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Enable Camera", fontWeight = FontWeight.Bold)
-                            }
-
-                            // Instant Sample Foliage Fallback for quick preview
-                            OutlinedButton(
-                                onClick = {
-                                    val sample = generateSamplePlantBitmap()
-                                    capturedBitmap = sample
-                                    capturedTimestamp = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
-                                },
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.4f)),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.testTag("sample_frame_button")
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.LocalFlorist,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Use Sample", fontSize = 12.sp)
-                            }
-                        }
-                    }
-                }
-            } else if (capturedBitmap != null) {
+            // Viewfinder Content Area: Captured Frame Review, Permission prompt, or Live Preview
+            if (capturedBitmap != null) {
                 // Captured Frame Review Mode staged for future AI analysis
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -555,6 +451,110 @@ fun MainCameraPreviewCard(
                                     text = if (isSavedToStagedQueue) "Saved" else "Save for Later",
                                     fontSize = 12.sp
                                 )
+                            }
+                        }
+                    }
+                }
+            } else if (!hasCameraPermission) {
+                // Permission Request Card with instant sample fallback
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(230.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Indigo900.copy(alpha = 0.9f),
+                                    Indigo700.copy(alpha = 0.85f)
+                                )
+                            )
+                        )
+                        .border(
+                            1.dp,
+                            Brush.horizontalGradient(listOf(Emerald400.copy(alpha = 0.4f), Cyan400.copy(alpha = 0.4f))),
+                            RoundedCornerShape(18.dp)
+                        )
+                        .padding(20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = Color.White.copy(alpha = 0.15f),
+                            modifier = Modifier.size(52.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.CameraAlt,
+                                    contentDescription = null,
+                                    tint = Emerald400,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = "Enable Camera Viewfinder",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+
+                        Text(
+                            text = "Stream your house plants in real time to inspect foliage, monitor soil conditions, and capture frames for AI diagnosis.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.8f),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(top = 4.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Emerald500,
+                                    contentColor = Color.White
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.testTag("enable_camera_preview_button")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CameraAlt,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Enable Camera", fontWeight = FontWeight.Bold)
+                            }
+
+                            // Instant Sample Foliage Fallback for quick preview
+                            OutlinedButton(
+                                onClick = {
+                                    val sample = generateSamplePlantBitmap()
+                                    capturedBitmap = sample
+                                    capturedTimestamp = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.4f)),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.testTag("sample_frame_button")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocalFlorist,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Use Sample", fontSize = 12.sp)
                             }
                         }
                     }

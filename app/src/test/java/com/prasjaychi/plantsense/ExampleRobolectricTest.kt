@@ -635,6 +635,7 @@ class ExampleRobolectricTest {
     // When permission is not yet granted in test, verify the prompt or sample button exists
     composeTestRule.onNodeWithTag("sample_frame_button").assertExists()
     composeTestRule.onNodeWithTag("sample_frame_button").performClick()
+    composeTestRule.waitForIdle()
 
     // After clicking sample frame, verify staged frame review actions appear
     composeTestRule.onNodeWithTag("analyze_captured_frame_button").assertExists()
@@ -643,6 +644,7 @@ class ExampleRobolectricTest {
 
     // Click analyze button and verify callback received bitmap
     composeTestRule.onNodeWithTag("analyze_captured_frame_button").performClick()
+    composeTestRule.waitForIdle()
     assertNotNull(analyzedBitmap)
   }
 }
