@@ -617,4 +617,32 @@ class ExampleRobolectricTest {
     assertNotNull(records)
     org.junit.Assert.assertTrue(records.isNotEmpty())
   }
+
+  @Test
+  fun `verify main camera preview card renders and supports sample frame capture`() {
+    var analyzedBitmap: Bitmap? = null
+    composeTestRule.setContent {
+      MyApplicationTheme {
+        com.prasjaychi.plantsense.ui.components.MainCameraPreviewCard(
+          onAnalyzeFrame = { bmp -> analyzedBitmap = bmp }
+        )
+      }
+    }
+
+    // Verify card is rendered
+    composeTestRule.onNodeWithTag("main_camerax_preview_card").assertExists()
+
+    // When permission is not yet granted in test, verify the prompt or sample button exists
+    composeTestRule.onNodeWithTag("sample_frame_button").assertExists()
+    composeTestRule.onNodeWithTag("sample_frame_button").performClick()
+
+    // After clicking sample frame, verify staged frame review actions appear
+    composeTestRule.onNodeWithTag("analyze_captured_frame_button").assertExists()
+    composeTestRule.onNodeWithTag("retake_frame_button").assertExists()
+    composeTestRule.onNodeWithTag("save_frame_for_later_button").assertExists()
+
+    // Click analyze button and verify callback received bitmap
+    composeTestRule.onNodeWithTag("analyze_captured_frame_button").performClick()
+    assertNotNull(analyzedBitmap)
+  }
 }

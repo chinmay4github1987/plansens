@@ -121,6 +121,7 @@ fun DashboardScreen(
     onNavigateToPlantHistory: () -> Unit = {},
     onNavigateToPlantTrends: () -> Unit = {},
     onNavigateToHealthTrends: () -> Unit = {},
+    onAnalyzeFrame: (android.graphics.Bitmap) -> Unit = {},
     viewModel: PlantHistoryViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -333,6 +334,12 @@ fun DashboardScreen(
                 }
             }
         }
+
+        // Live CameraX Preview Component with frame capture staged for future AI analysis
+        com.prasjaychi.plantsense.ui.components.MainCameraPreviewCard(
+            onAnalyzeFrame = onAnalyzeFrame,
+            onExpandToFullScanner = onNavigateToPlantCamera
+        )
 
         // 2. Recharts Metric KPI Stat Cards Strip
         Row(

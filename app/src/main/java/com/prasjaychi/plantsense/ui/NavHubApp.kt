@@ -367,6 +367,11 @@ fun NavHubApp(
                         inspectorViewModel.logNavigation("navigate", NavRoutes.PLANT_HEALTH_TRENDS, null, "From Dashboard Health Trends")
                         navController.navigate(NavRoutes.PLANT_HEALTH_TRENDS)
                     },
+                    onAnalyzeFrame = { capturedBitmap ->
+                        plantAnalysisViewModel.setCapturedBitmap(capturedBitmap)
+                        inspectorViewModel.logNavigation("navigate", NavRoutes.PLANT_ANALYSIS, null, "From Dashboard Live Camera Frame Capture")
+                        navController.navigate(NavRoutes.PLANT_ANALYSIS)
+                    },
                     viewModel = historyVm
                 )
             }
