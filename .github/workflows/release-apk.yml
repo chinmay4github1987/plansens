@@ -45,51 +45,38 @@ jobs:
 
       - name: Configure Environment (.env)
         run: |
-          echo "==> Configuring environment secrets"
-          if [ -n "${{ secrets.GEMINI_API_KEY }}" ]; then
-            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
-            echo "Configured GEMINI_API_KEY from GitHub Secrets"
-          elif [ -f .env.example ]; then
-            cp .env.example .env
-            echo "Configured .env from .env.example fallback"
-          else
-            echo "GEMINI_API_KEY=" > .env
+          echo "==> Configuring environment (.env)"
+          if [ ! -f .env ]; then
+            if [ -f .env.example ]; then
+              cp .env.example .env
+              echo "Configured .env from .env.example"
+            else
+              touch .env
+            fi
           fi
 
-      - name: Setup Release Keystore
-        id: setup-keystore
-        run: |
-          echo "==> Setting up Android signing keystore"
+          # If user optionally configures GitHub Secrets, inject or override them in .env:
+          if [ -n "${{ secrets.GEMINI_API_KEY }}" ]; then
+            sed -i '/^GEMINI_API_KEY=/d' .env
+            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+            echo "Configured GEMINI_API_KEY from GitHub Secrets into .env"
+          fi
           if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
-            echo "Using production KEYSTORE_BASE64 from GitHub Secrets"
-            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > my-upload-key.jks
-            echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/my-upload-key.jks" >> $GITHUB_ENV
-            echo "STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
-          else
-            echo "No custom KEYSTORE_BASE64 detected; generating CI self-signed upload keystore"
-            keytool -genkeypair \
-              -v \
-              -keystore my-upload-key.jks \
-              -alias upload \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000 \
-              -storepass android \
-              -keypass android \
-              -dname "CN=PlantSense, OU=Mobile, O=PlantSense, L=MountainView, S=CA, C=US"
-            echo "KEYSTORE_PATH=$GITHUB_WORKSPACE/my-upload-key.jks" >> $GITHUB_ENV
-            echo "STORE_PASSWORD=android" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=android" >> $GITHUB_ENV
+            sed -i '/^KEYSTORE_BASE64=/d' .env
+            echo "KEYSTORE_BASE64=${{ secrets.KEYSTORE_BASE64 }}" >> .env
+          fi
+          if [ -n "${{ secrets.STORE_PASSWORD }}" ]; then
+            sed -i '/^STORE_PASSWORD=/d' .env
+            echo "STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}" >> .env
+          fi
+          if [ -n "${{ secrets.KEY_PASSWORD }}" ]; then
+            sed -i '/^KEY_PASSWORD=/d' .env
+            echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> .env
           fi
 
       - name: Build Release APK with Gradle
-        env:
-          KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
-          STORE_PASSWORD: ${{ env.STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ env.KEY_PASSWORD }}
         run: |
-          echo "==> Compiling assembleRelease..."
+          echo "==> Compiling assembleRelease (keystore and signing managed via .env)..."
           ./gradlew :app:assembleRelease --stacktrace --no-daemon
 
       - name: Locate and Package Release APK

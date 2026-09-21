@@ -1,4 +1,8 @@
 import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
+import java.io.File
+import java.io.FileInputStream
+import java.util.Base64
+import java.util.Properties
 
 plugins {
   alias(libs.plugins.android.application)
@@ -23,13 +27,57 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
+  // Load properties from .env or .env.example for self-contained configuration
+  val envFile = rootProject.file(".env").takeIf { it.exists() } ?: rootProject.file(".env.example")
+  val envProps = Properties().apply {
+    if (envFile.exists()) {
+      FileInputStream(envFile).use { load(it) }
+    }
+  }
+
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
-      storeFile = file(keystorePath)
-      storePassword = System.getenv("STORE_PASSWORD")
-      keyAlias = "upload"
-      keyPassword = System.getenv("KEY_PASSWORD")
+      val rawKeystorePath = System.getenv("KEYSTORE_PATH")
+        ?: envProps.getProperty("KEYSTORE_PATH")
+        ?: "my-upload-key.jks"
+      val resolvedStoreFile = if (File(rawKeystorePath).isAbsolute) {
+        file(rawKeystorePath)
+      } else {
+        rootProject.file(rawKeystorePath)
+      }
+
+      // Auto-extract keystore from KEYSTORE_BASE64 if the jks file is not already on disk
+      val keystoreBase64 = System.getenv("KEYSTORE_BASE64") ?: envProps.getProperty("KEYSTORE_BASE64")
+      if (!resolvedStoreFile.exists() && !keystoreBase64.isNullOrBlank()) {
+        resolvedStoreFile.parentFile?.mkdirs()
+        try {
+          resolvedStoreFile.writeBytes(Base64.getDecoder().decode(keystoreBase64.trim()))
+        } catch (e: Exception) {
+          logger.warn("Could not decode KEYSTORE_BASE64 from .env: ${e.message}")
+        }
+      }
+
+      if (resolvedStoreFile.exists()) {
+        storeFile = resolvedStoreFile
+        storePassword = System.getenv("STORE_PASSWORD")
+          ?: envProps.getProperty("STORE_PASSWORD")
+          ?: "plantsense_release_pass"
+        keyAlias = System.getenv("KEY_ALIAS")
+          ?: envProps.getProperty("KEY_ALIAS")
+          ?: "upload"
+        keyPassword = System.getenv("KEY_PASSWORD")
+          ?: envProps.getProperty("KEY_PASSWORD")
+          ?: "plantsense_release_pass"
+      } else {
+        // Fallback to debug.keystore if upload keystore could not be found
+        val fallbackDebug = file("${rootDir}/debug.keystore")
+        if (fallbackDebug.exists()) {
+          storeFile = fallbackDebug
+          storePassword = "android"
+          keyAlias = "androiddebugkey"
+          keyPassword = "android"
+        }
+      }
     }
     create("debugConfig") {
       storeFile = file("${rootDir}/debug.keystore")
